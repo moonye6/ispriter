@@ -617,6 +617,7 @@ function collectStyleRules(styleSheet, result, styleSheetUrl) {
         if (imageUrl) {
 
             imageAbsUrl = path.join(styleSheetDir, imageUrl);
+            imageAbsUrl = onParseImgPath(imageAbsUrl) || imageAbsUrl;
             fileName = path.join(spriteConfig.workspace, imageAbsUrl);
 
             if (!fs.existsSync(fileName)) {
@@ -1348,6 +1349,9 @@ function copyUnspriteCss(spriteTask) {
 // sprite 的配置
 var spriteConfig = null;
 
+// 处理图片
+var onParseImgPath = null;
+
 // sprite 缓存
 var spriteCache = null;
 
@@ -1387,12 +1391,14 @@ function onSpriteEnd() {
  * @param  {Object|String} config ispriter 的配置对象或者是配置文件,
  * 如不清楚请参照 README.md
  * @param {Function} done 当精灵图合并完成后触发
+ * @param {Function} parseImg 自定义解析图片路径的方式
  */
-exports.merge = function(config, done) {
+exports.merge = function(config, done, parseImg) {
     onSpriteStart();
 
     spriteCache = {};
     onSpriteDone = done;
+    onParseImgPath = parseImg || function () {};
 
     imageInfoCache = {};
     spriteTaskArray = [];
